@@ -10,23 +10,22 @@ passport.use(
       callbackURL: "/api/users/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
+      const newUser = {
+        googleId: profile.id,
+        username: profile.displayName,
+      };
+
       try {
-        console.log("Google OAuth profile received:", profile);
         let user = await User.findOne({ googleId: profile.id });
-        if (!user) {
-          user = new User({
-            googleId: profile.id,
-            username: profile.displayName,
-          });
-          await user.save();
-          console.log("New user created:", user.username);
+
+        if (user) {
+          done(null, user);
         } else {
-          console.log("User found:", user.username);
+          user = await User.create(newUser);
+          done(null, user);
         }
-        return done(null, user);
       } catch (err) {
-        console.log("Error during Google OAuth:", err);
-        return done(err);
+        console.error(err);
       }
     }
   )
@@ -37,13 +36,6 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    console.log("Deserializing user:", user.username);
-    done(null, user);
-  } catch (err) {
-    console.log("Error during deserialization:", err);
-    done(err);
-  }
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => done(err, user));
 });

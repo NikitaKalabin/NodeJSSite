@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import moment from "moment";
+import api from "../utils/api"; // Adjust the import path as necessary
 
 const ItemDetails = () => {
   const { id } = useParams();
   const [item, setItem] = useState(null);
 
   useEffect(() => {
-    axios
+    api
       .get(`/api/books/${id}`)
       .then((response) => setItem(response.data))
       .catch((error) => console.error(error));

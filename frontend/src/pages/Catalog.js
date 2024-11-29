@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import api from "../utils/api";
 
 const Catalog = () => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    axios
+    api
       .get("/api/books")
       .then((response) => setItems(response.data))
       .catch((error) => console.error(error));
