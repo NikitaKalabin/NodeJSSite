@@ -1,0 +1,4 @@
+create backend app 
+create app frontend= npx create-react-app book-store-frontend
+
+sudo chown -R nikitakalabin /Users/nikitakalabin/Documents/GitHub/NodeJSSite/frontend
