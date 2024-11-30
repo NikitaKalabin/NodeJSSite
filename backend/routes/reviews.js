@@ -32,7 +32,8 @@ router.put("/:id", auth, async (req, res) => {
     let review = await Review.findById(req.params.id);
     if (!review) return res.status(404).json({ msg: "Review not found" });
 
-    if (review.user.toString() !== req.user.id) {
+    // Allow admins to edit any review
+    if (review.user.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(401).json({ msg: "User not authorized" });
     }
 
@@ -53,13 +54,15 @@ router.delete("/:id", auth, async (req, res) => {
     const review = await Review.findById(req.params.id);
     if (!review) return res.status(404).json({ msg: "Review not found" });
 
-    if (review.user.toString() !== req.user.id) {
+    // Allow admins to delete any review
+    if (review.user.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(401).json({ msg: "User not authorized" });
     }
 
-    await Review.findByIdAndRemove(req.params.id);
+    await Review.findByIdAndDelete(req.params.id);
     res.json({ msg: "Review removed" });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Server error" });
   }
 });

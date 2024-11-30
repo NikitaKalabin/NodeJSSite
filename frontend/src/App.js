@@ -8,6 +8,7 @@ import About from "./pages/About";
 import AdminPage from "./pages/AdminPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Reviews from "./pages/Reviews";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/item/:id" element={<ItemDetails />} />
             <Route path="/about" element={<About />} />
+            <Route path="/reviews" element={<Reviews />} />
             <Route
               path="/admin"
               element={<ProtectedRoute element={<AdminPage />} adminOnly />}

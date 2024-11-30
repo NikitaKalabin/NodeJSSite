@@ -17,17 +17,35 @@ router.post("/", auth, admin, async (req, res) => {
 });
 
 // Read books
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
+  const { search, sortBy, order, genre } = req.query;
   try {
-    const books = await Book.find().populate("genre");
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { author: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+    if (genre) {
+      query.genre = genre;
+    }
+
+    let sort = {};
+    if (sortBy) {
+      sort[sortBy] = order === "desc" ? -1 : 1;
+    }
+
+    const books = await Book.find(query).populate("genre").sort(sort);
     res.json(books);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
 });
-
 // Read book by ID
-router.get("/:id", auth, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const book = await Book.findById(req.params.id).populate("genre");
     if (!book) return res.status(404).json({ msg: "Book not found" });

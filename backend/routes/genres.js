@@ -17,7 +17,7 @@ router.post("/", auth, admin, async (req, res) => {
 });
 
 // Read genres
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const genres = await Genre.find();
     res.json(genres);
