@@ -20,11 +20,26 @@ export const AuthProvider = ({ children }) => {
         }
       }
     };
+
+    const checkGoogleLogin = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      if (token) {
+        localStorage.setItem("token", token);
+        fetchUser();
+        window.history.replaceState({}, document.title, "/");
+      }
+    };
+
     fetchUser();
+    checkGoogleLogin();
   }, []);
 
-  const login = async (username, password) => {
-    const response = await api.post("/api/users/login", { username, password });
+  const login = async (identifier, password) => {
+    const response = await api.post("/api/users/login", {
+      identifier,
+      password,
+    });
     localStorage.setItem("token", response.data.token);
     setUser(response.data.user);
   };

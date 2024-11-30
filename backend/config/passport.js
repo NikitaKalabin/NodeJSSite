@@ -13,6 +13,7 @@ passport.use(
       const newUser = {
         googleId: profile.id,
         username: profile.displayName,
+        email: profile.emails[0].value,
       };
 
       try {
@@ -26,16 +27,21 @@ passport.use(
         }
       } catch (err) {
         console.error(err);
+        done(err, null);
       }
     }
   )
 );
 
 passport.serializeUser((user, done) => {
-  console.log("Serializing user:", user.id);
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => done(err, user));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });

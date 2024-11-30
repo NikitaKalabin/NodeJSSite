@@ -9,19 +9,23 @@ const auth = require("../middleware/auth");
 
 // Register
 router.post("/register", async (req, res) => {
-  const { username, password, isAdmin } = req.body;
+  const { username, email, password, isAdmin } = req.body;
   try {
-    let user = await User.findOne({ username });
+    let user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
-      debug("User already exists: %s", username);
+      debug("User already exists: %s", email);
       return res.status(400).json({ msg: "User already exists" });
     }
 
-    user = new User({ username, password, isAdmin });
+    if (!password) {
+      return res.status(400).json({ msg: "Password is required" });
+    }
+
+    user = new User({ username, email, password, isAdmin });
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
-    debug("User registered successfully: %s", username);
+    debug("User registered successfully: %s", email);
     res.status(201).json({ msg: "User registered" });
   } catch (err) {
     debug("Server error during registration: %O", err);
@@ -31,17 +35,19 @@ router.post("/register", async (req, res) => {
 
 // Login
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { identifier, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
     if (!user) {
-      debug("Invalid credentials: %s", username);
+      debug("Invalid credentials: %s", identifier);
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      debug("Invalid credentials: %s", username);
+      debug("Invalid credentials: %s", identifier);
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
@@ -55,7 +61,7 @@ router.post("/login", async (req, res) => {
           debug("Error signing token: %O", err);
           throw err;
         }
-        debug("User logged in successfully: %s", username);
+        debug("User logged in successfully: %s", identifier);
         res.json({ token, user });
       }
     );
@@ -66,13 +72,22 @@ router.post("/login", async (req, res) => {
 });
 
 // Google OAuth
-router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    debug("Google OAuth callback received");
-    res.redirect("/dashboard");
+    const token = jwt.sign(
+      { user: { id: req.user.id } },
+      process.env.SESSION_SECRET,
+      {
+        expiresIn: 3600,
+      }
+    );
+    res.redirect(`http://localhost:3000?token=${token}`);
   }
 );
 
@@ -112,12 +127,12 @@ router.get("/:id", auth, async (req, res) => {
 
 // Update user
 router.put("/:id", auth, async (req, res) => {
-  const { username, password, googleId, isAdmin } = req.body;
+  const { username, email, password, googleId, isAdmin } = req.body;
   try {
     let user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    const updatedUser = { username, googleId, isAdmin };
+    const updatedUser = { username, email, googleId, isAdmin };
     if (password) {
       const salt = await bcrypt.genSalt(10);
       updatedUser.password = await bcrypt.hash(password, salt);

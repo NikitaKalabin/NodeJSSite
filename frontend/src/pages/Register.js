@@ -4,6 +4,7 @@ import api from "../utils/api";
 
 const Register = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
@@ -11,7 +12,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/api/users/register", { username, password, isAdmin });
+      await api.post("/api/users/register", {
+        username,
+        email,
+        password,
+        isAdmin,
+      });
       navigate("/login");
     } catch (error) {
       console.error(error);
@@ -27,6 +33,12 @@ const Register = () => {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
