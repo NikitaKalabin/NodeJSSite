@@ -8,6 +8,7 @@ const AdminPage = () => {
     <div>
       <h1>Admin Page</h1>
       <BooksAdmin />
+      {/* TO DO Add other types*/}
     </div>
   );
 };
