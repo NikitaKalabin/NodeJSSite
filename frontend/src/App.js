@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog";
 import ItemDetails from "./pages/ItemDetails";
-import About from "./pages/About";
 import AdminPage from "./pages/AdminPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -25,7 +24,6 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/item/:id" element={<ItemDetails />} />
-              <Route path="/about" element={<About />} />
               <Route path="/reviews" element={<Reviews />} />
               <Route
                 path="/admin"
