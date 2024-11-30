@@ -1,11 +1,13 @@
 import React from "react";
-import Book from "../components/Book";
-
+import BooksAdmin from "../components/BooksAdmin";
+import GenresAdmin from "../components/GenresAdmin";
+import ReviewsAdmin from "../components/ReviewsAdmin";
+import UsersAdmin from "../components/UsersAdmin";
 const AdminPage = () => {
   return (
     <div>
       <h1>Admin Page</h1>
-      <Book />
+      <BooksAdmin />
     </div>
   );
 };
