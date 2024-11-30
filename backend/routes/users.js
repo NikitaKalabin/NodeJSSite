@@ -1,4 +1,5 @@
 const express = require("express");
+const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
@@ -8,68 +9,91 @@ const debug = require("debug")("app:users");
 const auth = require("../middleware/auth");
 
 // Register
-router.post("/register", async (req, res) => {
-  const { username, email, password, isAdmin } = req.body;
-  try {
-    let user = await User.findOne({ $or: [{ email }, { username }] });
-    if (user) {
-      debug("User already exists: %s", email);
-      return res.status(400).json({ msg: "User already exists" });
+router.post(
+  "/register",
+  [
+    check("username", "Username is required").not().isEmpty(),
+    check("email", "Please include a valid email").isEmail(),
+    check("password", "Password must be at least 6 characters").isLength({
+      min: 6,
+    }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    if (!password) {
-      return res.status(400).json({ msg: "Password is required" });
-    }
+    const { username, email, password, isAdmin } = req.body;
+    try {
+      let user = await User.findOne({ $or: [{ email }, { username }] });
+      if (user) {
+        debug("User already exists: %s", email);
+        return res.status(400).json({ msg: "User already exists" });
+      }
 
-    user = new User({ username, email, password, isAdmin });
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-    await user.save();
-    debug("User registered successfully: %s", email);
-    res.status(201).json({ msg: "User registered" });
-  } catch (err) {
-    debug("Server error during registration: %O", err);
-    res.status(500).json({ msg: "Server error" });
+      user = new User({ username, email, password, isAdmin });
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+      await user.save();
+      debug("User registered successfully: %s", email);
+      res.status(201).json({ msg: "User registered" });
+    } catch (err) {
+      debug("Server error during registration: %O", err);
+      res.status(500).json({ msg: "Server error" });
+    }
   }
-});
+);
 
 // Login
-router.post("/login", async (req, res) => {
-  const { identifier, password } = req.body;
-  try {
-    const user = await User.findOne({
-      $or: [{ email: identifier }, { username: identifier }],
-    });
-    if (!user) {
-      debug("Invalid credentials: %s", identifier);
-      return res.status(400).json({ msg: "Invalid credentials" });
+router.post(
+  "/login",
+  [
+    check("identifier", "Username or Email is required").not().isEmpty(),
+    check("password", "Password is required").exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      debug("Invalid credentials: %s", identifier);
-      return res.status(400).json({ msg: "Invalid credentials" });
-    }
-
-    const payload = { user: { id: user.id } };
-    jwt.sign(
-      payload,
-      process.env.SESSION_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) {
-          debug("Error signing token: %O", err);
-          throw err;
-        }
-        debug("User logged in successfully: %s", identifier);
-        res.json({ token, user });
+    const { identifier, password } = req.body;
+    try {
+      const user = await User.findOne({
+        $or: [{ email: identifier }, { username: identifier }],
+      });
+      if (!user) {
+        debug("Invalid credentials: %s", identifier);
+        return res.status(400).json({ msg: "Invalid credentials" });
       }
-    );
-  } catch (err) {
-    debug("Server error during login: %O", err);
-    res.status(500).json({ msg: "Server error" });
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        debug("Invalid credentials: %s", identifier);
+        return res.status(400).json({ msg: "Invalid credentials" });
+      }
+
+      const payload = { user: { id: user.id } };
+      jwt.sign(
+        payload,
+        process.env.SESSION_SECRET,
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) {
+            debug("Error signing token: %O", err);
+            throw err;
+          }
+          debug("User logged in successfully: %s", identifier);
+          res.json({ token, user });
+        }
+      );
+    } catch (err) {
+      debug("Server error during login: %O", err);
+      res.status(500).json({ msg: "Server error" });
+    }
   }
-});
+);
 
 // Google OAuth
 router.get(
