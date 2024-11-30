@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
+import PropTypes from "prop-types";
+import { useLocation } from "react-router-dom";
 import moment from "moment";
-import api from "../utils/api"; // Adjust the import path as necessary
 
 const ItemDetails = () => {
-  const { id } = useParams();
-  const [item, setItem] = useState(null);
-
-  useEffect(() => {
-    api
-      .get(`/api/books/${id}`)
-      .then((response) => setItem(response.data))
-      .catch((error) => console.error(error));
-  }, [id]);
+  const location = useLocation();
+  const { item } = location.state || {};
 
   if (!item) return <div>Loading...</div>;
 
@@ -28,6 +21,28 @@ const ItemDetails = () => {
       </p>
     </div>
   );
+};
+
+ItemDetails.propTypes = {
+  item: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    author: PropTypes.string,
+    price: PropTypes.number,
+    createdAt: PropTypes.string,
+    updatedAt: PropTypes.string,
+  }),
+};
+
+ItemDetails.defaultProps = {
+  item: {
+    title: "Unknown Title",
+    description: "No description available",
+    author: "Unknown Author",
+    price: 0,
+    createdAt: moment().format("YYYY-MM-DD HH:mm:ss"),
+    updatedAt: moment().format("YYYY-MM-DD HH:mm:ss"),
+  },
 };
 
 export default ItemDetails;

@@ -6,15 +6,18 @@ import { AuthContext } from "../context/AuthContext";
 const BooksAdmin = () => {
   const { user } = useContext(AuthContext);
   const [books, setBooks] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [genre, setGenre] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editBookId, setEditBookId] = useState(null);
 
   useEffect(() => {
     fetchBooks();
+    fetchGenres();
   }, []);
 
   const fetchBooks = async () => {
@@ -26,9 +29,18 @@ const BooksAdmin = () => {
     }
   };
 
+  const fetchGenres = async () => {
+    try {
+      const response = await api.get("/api/genres");
+      setGenres(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const addBook = async () => {
     try {
-      const newBook = { title, author, description, price };
+      const newBook = { title, author, description, price, genre };
       await api.post("/api/books", newBook, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
@@ -37,6 +49,7 @@ const BooksAdmin = () => {
       setAuthor("");
       setDescription("");
       setPrice("");
+      setGenre("");
     } catch (error) {
       console.error(error);
     }
@@ -60,12 +73,13 @@ const BooksAdmin = () => {
     setAuthor(book.author);
     setDescription(book.description);
     setPrice(book.price);
+    setGenre(book.genre);
   };
 
   const editBook = async (e) => {
     e.preventDefault();
     try {
-      const updatedBook = { title, author, description, price };
+      const updatedBook = { title, author, description, price, genre };
       await api.put(`/api/books/${editBookId}`, updatedBook, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
@@ -76,6 +90,7 @@ const BooksAdmin = () => {
       setAuthor("");
       setDescription("");
       setPrice("");
+      setGenre("");
     } catch (error) {
       console.error(error);
     }
@@ -116,6 +131,14 @@ const BooksAdmin = () => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
+          <select value={genre} onChange={(e) => setGenre(e.target.value)}>
+            <option value="">Select Genre</option>
+            {genres.map((g) => (
+              <option key={g._id} value={g._id}>
+                {g.name}
+              </option>
+            ))}
+          </select>
           <button type="submit">{editMode ? "Update Book" : "Add Book"}</button>
           {editMode && (
             <button onClick={() => setEditMode(false)}>Cancel</button>
@@ -125,7 +148,9 @@ const BooksAdmin = () => {
       <ul>
         {books.map((book) => (
           <li key={book._id}>
-            <Link to={`/item/${book._id}`}>{book.title}</Link>
+            <Link to={`/item/${book._id}`} state={{ item: book }}>
+              {book.title}
+            </Link>
             <p>Created At: {formatDate(book.createdAt)}</p>
             <p>Updated At: {formatDate(book.updatedAt)}</p>
             {user && user.isAdmin && (

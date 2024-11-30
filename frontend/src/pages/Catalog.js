@@ -4,6 +4,7 @@ import api from "../utils/api";
 
 const Catalog = () => {
   const [items, setItems] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [order, setOrder] = useState("asc");
@@ -13,12 +14,23 @@ const Catalog = () => {
     fetchItems();
   }, [search, sortBy, order, genre]);
 
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+
   const fetchItems = () => {
     api
       .get("/api/books", {
         params: { search, sortBy, order, genre },
       })
       .then((response) => setItems(response.data))
+      .catch((error) => console.error(error));
+  };
+
+  const fetchGenres = () => {
+    api
+      .get("/api/genres")
+      .then((response) => setGenres(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -43,13 +55,19 @@ const Catalog = () => {
         </select>
         <select value={genre} onChange={(e) => setGenre(e.target.value)}>
           <option value="">All Genres</option>
-          {/* Add options for genres dynamically */}
+          {genres.map((g) => (
+            <option key={g._id} value={g._id}>
+              {g.name}
+            </option>
+          ))}
         </select>
       </div>
       <ul>
         {items.map((item) => (
           <li key={item._id}>
-            <Link to={`/item/${item._id}`}>{item.title}</Link>
+            <Link to={`/item/${item._id}`} state={{ item }}>
+              {item.title}
+            </Link>
           </li>
         ))}
       </ul>

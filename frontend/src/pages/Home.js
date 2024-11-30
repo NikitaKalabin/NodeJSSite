@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-
+import ApiData from "../components/ApiData";
 const Home = () => {
   const { user } = useContext(AuthContext);
   const [currentDate, setCurrentDate] = useState("");
@@ -18,6 +18,10 @@ const Home = () => {
       <div>
         <p>Current Date: {currentDate}</p>
         <p>Time Zone: {timeZone}</p>
+      </div>
+      <div>
+        <h2>API Data</h2>
+        <ApiData />
       </div>
     </div>
   );

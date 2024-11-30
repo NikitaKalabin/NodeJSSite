@@ -34,7 +34,10 @@ function App() {
               <Route path="/register" element={<Register />} />
             </Routes>
           </main>
-          <Footer />
+          {/* Example of props */}
+          <Footer
+            text={`© ${new Date().getFullYear()} Created by Nikita Kalabin. All rights reserved.`}
+          />
         </div>
       </Router>
     </AuthProvider>
