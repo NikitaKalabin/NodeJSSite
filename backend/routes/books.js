@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Book = require("../models/Book");
+const Review = require("../models/Review");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const upload = require("../config/multerConfig");
@@ -93,10 +94,11 @@ router.delete("/:id", auth, admin, async (req, res) => {
     const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ msg: "Book not found" });
 
-    await Book.findByIdAndRemove(req.params.id);
-    res.json({ msg: "Book removed" });
+    await Book.findByIdAndDelete(req.params.id);
+    await Review.deleteMany({ book: req.params.id });
+    res.json({ msg: "Book and associated reviews removed" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
