@@ -5,6 +5,7 @@ const BookSchema = new mongoose.Schema({
   description: { type: String },
   price: { type: Number, required: true },
   genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre" },
+  image: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

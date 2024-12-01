@@ -3,13 +3,44 @@ const router = express.Router();
 const Book = require("../models/Book");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
+const upload = require("../config/multerConfig");
 
 // Create book
-router.post("/", auth, admin, async (req, res) => {
+router.post("/", auth, admin, upload.single("image"), async (req, res) => {
   const { title, author, description, price, genre } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
   try {
-    const newBook = new Book({ title, author, description, price, genre });
+    const newBook = new Book({
+      title,
+      author,
+      description,
+      price,
+      genre,
+      image,
+    });
     const book = await newBook.save();
+    res.json(book);
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// Update book
+router.put("/:id", auth, admin, upload.single("image"), async (req, res) => {
+  const { title, author, description, price, genre } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
+  try {
+    let book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ msg: "Book not found" });
+
+    const updatedFields = { title, author, description, price, genre };
+    if (image) updatedFields.image = image;
+
+    book = await Book.findByIdAndUpdate(
+      req.params.id,
+      { $set: updatedFields },
+      { new: true }
+    );
     res.json(book);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
@@ -44,29 +75,12 @@ router.get("/", async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 });
+
 // Read book by ID
 router.get("/:id", async (req, res) => {
   try {
     const book = await Book.findById(req.params.id).populate("genre");
     if (!book) return res.status(404).json({ msg: "Book not found" });
-    res.json(book);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-// Update book
-router.put("/:id", auth, admin, async (req, res) => {
-  const { title, author, description, price, genre } = req.body;
-  try {
-    let book = await Book.findById(req.params.id);
-    if (!book) return res.status(404).json({ msg: "Book not found" });
-
-    book = await Book.findByIdAndUpdate(
-      req.params.id,
-      { $set: { title, author, description, price, genre } },
-      { new: true }
-    );
     res.json(book);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });

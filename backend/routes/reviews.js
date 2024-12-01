@@ -17,8 +17,10 @@ router.post("/", auth, async (req, res) => {
 
 // Read reviews
 router.get("/", async (req, res) => {
+  const { book } = req.query;
   try {
-    const reviews = await Review.find().populate("user").populate("book");
+    const query = book ? { book } : {};
+    const reviews = await Review.find(query).populate("user").populate("book");
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });

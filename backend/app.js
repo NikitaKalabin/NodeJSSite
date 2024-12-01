@@ -5,6 +5,7 @@ const passport = require("passport");
 require("./config/passport"); // Импортируйте файл passport.js
 const session = require("express-session");
 const cors = require("cors");
+const path = require("path");
 const app = express();
 
 // Подключение к базе данных MongoDB
@@ -25,6 +26,9 @@ app.use(
 // Инициализация passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Обслуживание статических файлов из директории uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Подключение маршрутов
 app.use("/api/users", require("./routes/users"));

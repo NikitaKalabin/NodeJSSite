@@ -28,7 +28,7 @@ const Home = () => {
 
   const containerStyles = {
     padding: "20px",
-    backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
+    backgroundColor: theme === "light" ? "#fafafa" : "#444",
     color: theme === "light" ? "#000" : "#fff",
     minHeight: "100vh",
   };
