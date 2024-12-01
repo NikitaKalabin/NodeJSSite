@@ -5,7 +5,11 @@
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm start",
     "start:docker": "docker-compose up -d",
-    "start:all": "npm-run-all --parallel start:backend start:frontend start:docker"
+    "start:all": "npm-run-all --parallel start:backend start:frontend start:docker",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:docker": "docker-compose build",
+    "install:all": "npm-run-all --parallel install:backend install:frontend install:docker"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

@@ -14,10 +14,10 @@ This project is built using the MERN stack (MongoDB, Express, React, Node.js) as
 
 - NodeJS
 - Docker
+## How to install?
+```npm install```, then ```npm run install:all```
 
 ## How to start?
 
-```
-npm run start:all
-```
+```npm run start:all```
 
