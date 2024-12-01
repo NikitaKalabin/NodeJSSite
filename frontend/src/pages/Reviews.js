@@ -9,9 +9,9 @@ const Reviews = () => {
   const { user } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const [reviews, setReviews] = useState([]);
-  const [books, setBooks] = useState([]);
-  const [selectedBookForReview, setSelectedBookForReview] = useState("");
-  const [selectedBookForFilter, setSelectedBookForFilter] = useState("");
+  const [services, setservices] = useState([]);
+  const [selectedserviceForReview, setSelectedserviceForReview] = useState("");
+  const [selectedserviceForFilter, setSelectedserviceForFilter] = useState("");
   const [rating, setRating] = useState(1);
   const [comment, setComment] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -19,14 +19,14 @@ const Reviews = () => {
   const formRef = useRef(null);
 
   useEffect(() => {
-    fetchBooks();
+    fetchServices();
     fetchReviews();
   }, []);
 
-  const fetchReviews = async (selectedBook = "") => {
+  const fetchReviews = async (selectedservice = "") => {
     try {
       const response = await api.get("/api/reviews", {
-        params: { book: selectedBook },
+        params: { service: selectedservice },
       });
       setReviews(response.data);
     } catch (error) {
@@ -34,10 +34,10 @@ const Reviews = () => {
     }
   };
 
-  const fetchBooks = async () => {
+  const fetchServices = async () => {
     try {
-      const response = await api.get("/api/books");
-      setBooks(response.data);
+      const response = await api.get("/api/services");
+      setservices(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -46,12 +46,12 @@ const Reviews = () => {
   const addReview = async (e) => {
     e.preventDefault();
     try {
-      const newReview = { book: selectedBookForReview, rating, comment };
+      const newReview = { service: selectedserviceForReview, rating, comment };
       await api.post("/api/reviews", newReview, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
       fetchReviews();
-      setSelectedBookForReview("");
+      setSelectedserviceForReview("");
       setRating(1);
       setComment("");
     } catch (error) {
@@ -64,7 +64,7 @@ const Reviews = () => {
       await api.delete(`/api/reviews/${id}`, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
-      fetchReviews(selectedBookForFilter);
+      fetchReviews(selectedserviceForFilter);
     } catch (error) {
       console.error(error);
     }
@@ -73,7 +73,7 @@ const Reviews = () => {
   const startEditReview = (review) => {
     setEditMode(true);
     setEditReviewId(review._id);
-    setSelectedBookForReview(review.book._id);
+    setSelectedserviceForReview(review.service._id);
     setRating(review.rating);
     setComment(review.comment);
     formRef.current.scrollIntoView({ behavior: "smooth" });
@@ -86,10 +86,10 @@ const Reviews = () => {
       await api.put(`/api/reviews/${editReviewId}`, updatedReview, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
-      fetchReviews(selectedBookForFilter);
+      fetchReviews(selectedserviceForFilter);
       setEditMode(false);
       setEditReviewId(null);
-      setSelectedBookForReview("");
+      setSelectedserviceForReview("");
       setRating(1);
       setComment("");
     } catch (error) {
@@ -177,16 +177,16 @@ const Reviews = () => {
           ref={formRef}
         >
           <select
-            value={selectedBookForReview}
-            onChange={(e) => setSelectedBookForReview(e.target.value)}
+            value={selectedserviceForReview}
+            onChange={(e) => setSelectedserviceForReview(e.target.value)}
             required
             disabled={editMode}
             style={selectStyles}
           >
-            <option value="">Select Book</option>
-            {books.map((book) => (
-              <option key={book._id} value={book._id}>
-                {book.title}
+            <option value="">Select service</option>
+            {services.map((service) => (
+              <option key={service._id} value={service._id}>
+                {service.title}
               </option>
             ))}
           </select>
@@ -216,17 +216,17 @@ const Reviews = () => {
         </form>
       )}
       <select
-        value={selectedBookForFilter}
+        value={selectedserviceForFilter}
         onChange={(e) => {
-          setSelectedBookForFilter(e.target.value);
+          setSelectedserviceForFilter(e.target.value);
           fetchReviews(e.target.value);
         }}
         style={selectStyles}
       >
-        <option value="">All Books</option>
-        {books.map((book) => (
-          <option key={book._id} value={book._id}>
-            {book.title}
+        <option value="">All services</option>
+        {services.map((service) => (
+          <option key={service._id} value={service._id}>
+            {service.title}
           </option>
         ))}
       </select>
@@ -234,20 +234,20 @@ const Reviews = () => {
         {reviews.map((review) => (
           <div key={review._id} style={reviewCardStyles}>
             <div style={{ display: "flex", alignItems: "center" }}>
-              {review.book.image && (
+              {review.service.image && (
                 <img
-                  src={`${config.baseURL}${review.book.image}`}
-                  alt={review.book.title}
+                  src={`${config.baseURL}${review.service.image}`}
+                  alt={review.service.title}
                   style={imageStyles}
                 />
               )}
               <div>
                 <Link
-                  to={`/item/${review.book._id}`}
-                  state={{ item: review.book }}
+                  to={`/item/${review.service._id}`}
+                  state={{ item: review.service }}
                   style={linkStyles}
                 >
-                  <h3>{review.book.title}</h3>
+                  <h3>{review.service.title}</h3>
                 </Link>
                 <div style={progressBarStyles(review.rating)}></div>
                 <p>Rating: {review.rating}</p>

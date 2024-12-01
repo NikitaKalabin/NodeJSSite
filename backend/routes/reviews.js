@@ -1,29 +1,38 @@
 const express = require("express");
 const router = express.Router();
 const Review = require("../models/Review");
+const Service = require("../models/Service"); // Импортируем модель Service
 const auth = require("../middleware/auth");
 
 // Create review
 router.post("/", auth, async (req, res) => {
-  const { book, rating, comment } = req.body;
+  const { service, rating, comment } = req.body;
   try {
-    const newReview = new Review({ user: req.user.id, book, rating, comment });
+    const newReview = new Review({
+      user: req.user.id,
+      service,
+      rating,
+      comment,
+    });
     const review = await newReview.save();
     res.json(review);
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
 // Read reviews
 router.get("/", async (req, res) => {
-  const { book } = req.query;
+  const { service } = req.query;
   try {
-    const query = book ? { book } : {};
-    const reviews = await Review.find(query).populate("user").populate("book");
+    const query = service ? { service } : {};
+    const reviews = await Review.find(query)
+      .populate("user")
+      .populate("service");
     res.json(reviews);
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error(err); // Выводим ошибку в консоль для отладки
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
@@ -34,19 +43,14 @@ router.put("/:id", auth, async (req, res) => {
     let review = await Review.findById(req.params.id);
     if (!review) return res.status(404).json({ msg: "Review not found" });
 
-    // Allow admins to edit any review
-    if (review.user.toString() !== req.user.id && !req.user.isAdmin) {
-      return res.status(401).json({ msg: "User not authorized" });
-    }
+    review.rating = rating;
+    review.comment = comment;
+    review.updatedAt = Date.now();
 
-    review = await Review.findByIdAndUpdate(
-      req.params.id,
-      { $set: { rating, comment } },
-      { new: true }
-    );
+    review = await review.save();
     res.json(review);
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 

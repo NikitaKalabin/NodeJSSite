@@ -1,4 +1,4 @@
 create backend app = npm init
-create app frontend = npx create-react-app book-store-frontend
+create app frontend = npx create-react-app service-store-frontend
 create secret for session = 12ef9ee8ee8643cdf5f2778fe838377dccf26b327aa2f4ec8882ee3795df5cf066326e16ecf5d7a3661988abbac80c7f468456b25f75cd4b548552c6197f5b32
 to fix bug with saving files = sudo chown -R nikitakalabin /Users/nikitakalabin/Documents/GitHub/NodeJSSite/frontend

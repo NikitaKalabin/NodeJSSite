@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import BooksAdmin from "../components/BooksAdmin";
+import ServicesAdmin from "../components/ServicesAdmin";
 import { ThemeContext } from "../context/ThemeContext";
-
+import ServicesTypesAdmin from "../components/ServicesTypesAdmin";
 const AdminPage = () => {
   const { theme } = useContext(ThemeContext);
 
@@ -20,7 +20,8 @@ const AdminPage = () => {
   return (
     <div style={containerStyles}>
       <h1 style={headerStyles}>Admin Page</h1>
-      <BooksAdmin />
+      <ServicesAdmin />
+      <ServicesTypesAdmin />
     </div>
   );
 };

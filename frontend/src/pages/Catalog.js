@@ -7,33 +7,33 @@ import { ThemeContext } from "../context/ThemeContext";
 const Catalog = () => {
   const { theme } = useContext(ThemeContext);
   const [items, setItems] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [serviceTypes, setServiceTypes] = useState([]);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [order, setOrder] = useState("asc");
-  const [genre, setGenre] = useState("");
+  const [serviceType, setServiceType] = useState("");
 
   useEffect(() => {
     fetchItems();
-  }, [search, sortBy, order, genre]);
+  }, [search, sortBy, order, serviceType]);
 
   useEffect(() => {
-    fetchGenres();
+    fetchServiceTypes();
   }, []);
 
   const fetchItems = () => {
     api
-      .get("/api/books", {
-        params: { search, sortBy, order, genre },
+      .get("/api/services", {
+        params: { search, sortBy, order, serviceType },
       })
       .then((response) => setItems(response.data))
       .catch((error) => console.error(error));
   };
 
-  const fetchGenres = () => {
+  const fetchServiceTypes = () => {
     api
-      .get("/api/genres")
-      .then((response) => setGenres(response.data))
+      .get("/api/serviceTypes")
+      .then((response) => setServiceTypes(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -122,12 +122,12 @@ const Catalog = () => {
           <option value="desc">Descending</option>
         </select>
         <select
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
+          value={serviceType}
+          onChange={(e) => setServiceType(e.target.value)}
           style={selectStyles}
         >
-          <option value="">All Genres</option>
-          {genres.map((g) => (
+          <option value="">All serviceTypes</option>
+          {serviceTypes.map((g) => (
             <option key={g._id} value={g._id}>
               {g.name}
             </option>

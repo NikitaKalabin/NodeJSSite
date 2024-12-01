@@ -13,21 +13,23 @@ const ItemDetails = () => {
   const { theme } = useContext(ThemeContext);
   const location = useLocation();
   const { item } = location.state || {};
-  const [randomBooks, setRandomBooks] = useState([]);
+  const [randomservices, setRandomServices] = useState([]);
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchServices = async () => {
       try {
-        const response = await api.get("/api/books");
-        const books = response.data.filter((book) => book._id !== item._id);
-        const shuffled = books.sort(() => 0.5 - Math.random());
-        setRandomBooks(shuffled.slice(0, 4));
+        const response = await api.get("/api/services");
+        const services = response.data.filter(
+          (service) => service._id !== item._id
+        );
+        const shuffled = services.sort(() => 0.5 - Math.random());
+        setRandomServices(shuffled.slice(0, 4));
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchBooks();
+    fetchServices();
   }, [item._id]);
 
   if (!item) return <div>Loading...</div>;
@@ -61,6 +63,10 @@ const ItemDetails = () => {
 
   const sliderStyles = {
     marginTop: "40px",
+  };
+
+  const sliderItemStyles = {
+    padding: "10px",
   };
 
   const sliderSettings = {
@@ -107,21 +113,21 @@ const ItemDetails = () => {
       <div style={sliderStyles}>
         <h2>You will also like</h2>
         <Slider {...sliderSettings}>
-          {randomBooks.map((book) => (
-            <div key={book._id} style={itemStyles}>
+          {randomservices.map((service) => (
+            <div key={service._id} style={sliderItemStyles}>
               <Link
-                to={`/item/${book._id}`}
-                state={{ item: book }}
+                to={`/item/${service._id}`}
+                state={{ item: service }}
                 style={linkStyles}
               >
-                {book.image && (
+                {service.image && (
                   <img
-                    src={`${config.baseURL}${book.image}`}
-                    alt={book.title}
+                    src={`${config.baseURL}${service.image}`}
+                    alt={service.title}
                     style={imageStyles}
                   />
                 )}
-                <h3>{book.title}</h3>
+                <h3>{service.title}</h3>
               </Link>
             </div>
           ))}

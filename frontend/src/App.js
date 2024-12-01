@@ -58,7 +58,7 @@ function App() {
               </div>
             </main>
             <Footer
-              text={`© ${new Date().getFullYear()} Created by Nikita Kalabin. All rights reserved.`}
+              text={`© ${new Date().getFullYear()} Created by Darya Soroka. All rights reserved.`}
             />
           </div>
         </Router>

@@ -5,125 +5,125 @@ import config from "../config";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 
-const BooksAdmin = () => {
+const ServicesAdmin = () => {
   const { user } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
-  const [books, setBooks] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [services, setServices] = useState([]);
+  const [serviceTypes, setServiceTypes] = useState([]);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [genre, setGenre] = useState("");
+  const [serviceType, setServiceType] = useState("");
   const [image, setImage] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [editBookId, setEditBookId] = useState(null);
+  const [editServiceId, setEditServiceId] = useState(null);
   const formRef = useRef(null);
 
   useEffect(() => {
-    fetchBooks();
-    fetchGenres();
+    fetchServices();
+    fetchServiceTypes();
   }, []);
 
-  const fetchBooks = async () => {
+  const fetchServices = async () => {
     try {
-      const response = await api.get("/api/books");
-      setBooks(response.data);
+      const response = await api.get("/api/services");
+      setServices(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchGenres = async () => {
+  const fetchServiceTypes = async () => {
     try {
-      const response = await api.get("/api/genres");
-      setGenres(response.data);
+      const response = await api.get("/api/serviceTypes");
+      setServiceTypes(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const addBook = async (e) => {
+  const addService = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
     formData.append("author", author);
     formData.append("description", description);
     formData.append("price", price);
-    formData.append("genre", genre);
+    formData.append("serviceType", serviceType);
     if (image) {
       formData.append("image", image);
     }
 
     try {
-      await api.post("/api/books", formData, {
+      await api.post("/api/services", formData, {
         headers: {
           "x-auth-token": localStorage.getItem("token"),
           "Content-Type": "multipart/form-data",
         },
       });
-      fetchBooks();
+      fetchServices();
       setTitle("");
       setAuthor("");
       setDescription("");
       setPrice("");
-      setGenre("");
+      setServiceType("");
       setImage(null);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const deleteBook = async (id) => {
+  const deleteService = async (id) => {
     try {
-      await api.delete(`/api/books/${id}`, {
+      await api.delete(`/api/services/${id}`, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
-      fetchBooks();
+      fetchServices();
     } catch (error) {
       console.error(error);
     }
   };
 
-  const startEditBook = (book) => {
+  const startEditService = (service) => {
     setEditMode(true);
-    setEditBookId(book._id);
-    setTitle(book.title);
-    setAuthor(book.author);
-    setDescription(book.description);
-    setPrice(book.price);
-    setGenre(book.genre);
+    setEditServiceId(service._id);
+    setTitle(service.title);
+    setAuthor(service.author);
+    setDescription(service.description);
+    setPrice(service.price);
+    setServiceType(service.serviceType);
     setImage(null); // Reset image field
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const editBook = async (e) => {
+  const editService = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
     formData.append("author", author);
     formData.append("description", description);
     formData.append("price", price);
-    formData.append("genre", genre);
+    formData.append("serviceType", serviceType);
     if (image) {
       formData.append("image", image);
     }
 
     try {
-      await api.put(`/api/books/${editBookId}`, formData, {
+      await api.put(`/api/services/${editServiceId}`, formData, {
         headers: {
           "x-auth-token": localStorage.getItem("token"),
           "Content-Type": "multipart/form-data",
         },
       });
-      fetchBooks();
+      fetchServices();
       setEditMode(false);
-      setEditBookId(null);
+      setEditServiceId(null);
       setTitle("");
       setAuthor("");
       setDescription("");
       setPrice("");
-      setGenre("");
+      setServiceType("");
       setImage(null);
     } catch (error) {
       console.error(error);
@@ -176,13 +176,13 @@ const BooksAdmin = () => {
     color: "#fff",
   };
 
-  const bookListStyles = {
+  const serviceListStyles = {
     display: "flex",
     flexDirection: "column",
     gap: "20px",
   };
 
-  const bookCardStyles = {
+  const serviceCardStyles = {
     backgroundColor: theme === "light" ? "#fff" : "#444",
     padding: "20px",
     borderRadius: "5px",
@@ -207,10 +207,10 @@ const BooksAdmin = () => {
 
   return (
     <div style={containerStyles}>
-      <h1>Books</h1>
+      <h1>Services</h1>
       {user && user.isAdmin && (
         <form
-          onSubmit={editMode ? editBook : addBook}
+          onSubmit={editMode ? editService : addService}
           style={formStyles}
           ref={formRef}
         >
@@ -243,12 +243,12 @@ const BooksAdmin = () => {
             style={inputStyles}
           />
           <select
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
+            value={serviceType}
+            onChange={(e) => setServiceType(e.target.value)}
             style={inputStyles}
           >
-            <option value="">Select Genre</option>
-            {genres.map((g) => (
+            <option value="">Select serviceType</option>
+            {serviceTypes.map((g) => (
               <option key={g._id} value={g._id}>
                 {g.name}
               </option>
@@ -256,7 +256,7 @@ const BooksAdmin = () => {
           </select>
           <input type="file" onChange={(e) => setImage(e.target.files[0])} />
           <button type="submit" style={buttonStyles}>
-            {editMode ? "Update Book" : "Add Book"}
+            {editMode ? "Update service" : "Add service"}
           </button>
           {editMode && (
             <button onClick={() => setEditMode(false)} style={buttonStyles}>
@@ -265,37 +265,37 @@ const BooksAdmin = () => {
           )}
         </form>
       )}
-      <div style={bookListStyles}>
-        {books.map((book) => (
-          <div key={book._id} style={bookCardStyles}>
+      <div style={serviceListStyles}>
+        {services.map((service) => (
+          <div key={service._id} style={serviceCardStyles}>
             <div style={{ display: "flex", alignItems: "center" }}>
-              {book.image && (
+              {service.image && (
                 <img
-                  src={`${config.baseURL}${book.image}`}
-                  alt={book.title}
+                  src={`${config.baseURL}${service.image}`}
+                  alt={service.title}
                   style={imageStyles}
                 />
               )}
               <div>
                 <Link
-                  to={`/item/${book._id}`}
-                  state={{ item: book }}
+                  to={`/item/${service._id}`}
+                  state={{ item: service }}
                   style={linkStyles}
                 >
-                  <h3>{book.title}</h3>
+                  <h3>{service.title}</h3>
                 </Link>
-                <p>Created At: {formatDate(book.createdAt)}</p>
-                <p>Updated At: {formatDate(book.updatedAt)}</p>
+                <p>Created At: {formatDate(service.createdAt)}</p>
+                <p>Updated At: {formatDate(service.updatedAt)}</p>
                 {user && user.isAdmin && (
                   <>
                     <button
-                      onClick={() => startEditBook(book)}
+                      onClick={() => startEditService(service)}
                       style={buttonStyles}
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => deleteBook(book._id)}
+                      onClick={() => deleteService(service._id)}
                       style={buttonStyles}
                     >
                       Delete
@@ -311,4 +311,4 @@ const BooksAdmin = () => {
   );
 };
 
-export default BooksAdmin;
+export default ServicesAdmin;
