@@ -77,8 +77,7 @@ const Catalog = () => {
 
   const imageStyles = {
     width: "100%",
-    height: "200px",
-    objectFit: "cover",
+    objectFit: "contain",
     borderRadius: "5px",
     marginBottom: "10px",
   };
