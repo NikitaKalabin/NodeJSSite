@@ -12,6 +12,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Settings from "./components/Settings";
 
 /* Декларативная функция */
 function App() {
@@ -46,6 +47,7 @@ function App() {
                   <Route path="/catalog" element={<Catalog />} />
                   <Route path="/item/:id" element={<ItemDetails />} />
                   <Route path="/reviews" element={<Reviews />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route
                     path="/admin"
                     element={

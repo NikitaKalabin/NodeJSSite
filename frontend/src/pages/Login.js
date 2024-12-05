@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 
@@ -10,6 +9,7 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const [serverError, setServerError] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -25,6 +25,7 @@ const Login = () => {
         await login(values.identifier, values.password);
         navigate("/");
       } catch (error) {
+        setServerError("Invalid username or password");
         console.error(error);
       }
     },
@@ -73,14 +74,20 @@ const Login = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
+  };
+
+  const errorStyles = {
+    color: "red",
+    marginBottom: "10px",
   };
 
   return (
     <div style={containerStyles}>
       <form onSubmit={formik.handleSubmit} style={formStyles}>
         <h1>Login</h1>
+        {serverError && <div style={errorStyles}>{serverError}</div>}
         <input
           type="text"
           placeholder="Username or Email"
@@ -88,7 +95,7 @@ const Login = () => {
           style={inputStyles}
         />
         {formik.touched.identifier && formik.errors.identifier ? (
-          <div>{formik.errors.identifier}</div>
+          <div style={errorStyles}>{formik.errors.identifier}</div>
         ) : null}
         <input
           type="password"
@@ -97,7 +104,7 @@ const Login = () => {
           style={inputStyles}
         />
         {formik.touched.password && formik.errors.password ? (
-          <div>{formik.errors.password}</div>
+          <div style={errorStyles}>{formik.errors.password}</div>
         ) : null}
         <button type="submit" style={buttonStyles}>
           Login

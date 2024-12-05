@@ -3,7 +3,7 @@ import api from "../utils/api";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 
-const ServiceTypesAdmin = () => {
+const ServiceTypesAdmin = ({ onServiceTypeAdded }) => {
   const { user } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const [serviceTypes, setServiceTypes] = useState([]);
@@ -35,6 +35,7 @@ const ServiceTypesAdmin = () => {
       fetchServiceTypes();
       setName("");
       setDescription("");
+      onServiceTypeAdded(); // Вызов функции обновления списка услуг
     } catch (error) {
       console.error(error);
     }
@@ -74,6 +75,7 @@ const ServiceTypesAdmin = () => {
       setEditServiceTypeId(null);
       setName("");
       setDescription("");
+      onServiceTypeAdded(); // Вызов функции обновления списка услуг
     } catch (error) {
       console.error(error);
     }
@@ -87,9 +89,12 @@ const ServiceTypesAdmin = () => {
 
   const containerStyles = {
     padding: "20px",
-    backgroundColor: theme === "light" ? "#fafafa" : "#444",
+    backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
     color: theme === "light" ? "#000" : "#fff",
     minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   };
 
   const formStyles = {
@@ -98,13 +103,14 @@ const ServiceTypesAdmin = () => {
     gap: "10px",
     padding: "20px",
     backgroundColor: theme === "light" ? "#fff" : "#444",
-    borderRadius: "5px",
+    borderRadius: "10px",
     boxShadow:
       theme === "light"
-        ? "0 0 10px rgba(0, 0, 0, 0.1)"
-        : "0 0 10px rgba(255, 255, 255, 0.1)",
+        ? "0 0 15px rgba(0, 0, 0, 0.1)"
+        : "0 0 15px rgba(255, 255, 255, 0.1)",
     maxWidth: "600px",
-    margin: "0 auto 20px",
+    width: "100%",
+    marginBottom: "20px",
   };
 
   const inputStyles = {
@@ -121,23 +127,25 @@ const ServiceTypesAdmin = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
   };
 
   const listStyles = {
     listStyleType: "none",
     padding: 0,
+    width: "100%",
+    maxWidth: "600px",
   };
 
   const listItemStyles = {
     backgroundColor: theme === "light" ? "#fff" : "#444",
     padding: "20px",
-    borderRadius: "5px",
+    borderRadius: "10px",
     boxShadow:
       theme === "light"
-        ? "0 0 10px rgba(0, 0, 0, 0.1)"
-        : "0 0 10px rgba(255, 255, 255, 0.1)",
+        ? "0 0 15px rgba(0, 0, 0, 0.1)"
+        : "0 0 15px rgba(255, 255, 255, 0.1)",
     marginBottom: "10px",
   };
 

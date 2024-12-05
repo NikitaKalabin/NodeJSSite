@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { ThemeContext } from "../context/ThemeContext";
 const Register = () => {
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const [serverError, setServerError] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +31,7 @@ const Register = () => {
         await api.post("/api/users/register", values);
         navigate("/login");
       } catch (error) {
+        setServerError("Registration failed. Please try again.");
         console.error(error);
       }
     },
@@ -73,14 +75,20 @@ const Register = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
+  };
+
+  const errorStyles = {
+    color: "red",
+    marginBottom: "10px",
   };
 
   return (
     <div style={containerStyles}>
       <form onSubmit={formik.handleSubmit} style={formStyles}>
         <h1>Register</h1>
+        {serverError && <div style={errorStyles}>{serverError}</div>}
         <input
           type="text"
           placeholder="Username"
@@ -88,7 +96,7 @@ const Register = () => {
           style={inputStyles}
         />
         {formik.touched.username && formik.errors.username ? (
-          <div>{formik.errors.username}</div>
+          <div style={errorStyles}>{formik.errors.username}</div>
         ) : null}
         <input
           type="email"
@@ -97,7 +105,7 @@ const Register = () => {
           style={inputStyles}
         />
         {formik.touched.email && formik.errors.email ? (
-          <div>{formik.errors.email}</div>
+          <div style={errorStyles}>{formik.errors.email}</div>
         ) : null}
         <input
           type="password"
@@ -106,7 +114,7 @@ const Register = () => {
           style={inputStyles}
         />
         {formik.touched.password && formik.errors.password ? (
-          <div>{formik.errors.password}</div>
+          <div style={errorStyles}>{formik.errors.password}</div>
         ) : null}
         <label>
           <input type="checkbox" {...formik.getFieldProps("isAdmin")} />

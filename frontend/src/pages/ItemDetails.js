@@ -2,34 +2,29 @@ import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useLocation, Link } from "react-router-dom";
 import moment from "moment";
-import Slider from "react-slick";
 import { ThemeContext } from "../context/ThemeContext";
 import api from "../utils/api";
 import config from "../config";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 const ItemDetails = () => {
   const { theme } = useContext(ThemeContext);
   const location = useLocation();
   const { item } = location.state || {};
-  const [randomservices, setRandomServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchReviews = async () => {
       try {
-        const response = await api.get("/api/services");
-        const services = response.data.filter(
-          (service) => service._id !== item._id
-        );
-        const shuffled = services.sort(() => 0.5 - Math.random());
-        setRandomServices(shuffled.slice(0, 4));
+        const response = await api.get("/api/reviews", {
+          params: { service: item._id },
+        });
+        setReviews(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchServices();
+    fetchReviews();
   }, [item._id]);
 
   if (!item) return <div>Loading...</div>;
@@ -61,38 +56,36 @@ const ItemDetails = () => {
     color: theme === "light" ? "#000" : "#fff",
   };
 
-  const sliderStyles = {
+  const reviewListStyles = {
     marginTop: "40px",
   };
 
-  const sliderItemStyles = {
-    padding: "10px",
+  const reviewItemStyles = {
+    backgroundColor: theme === "light" ? "#fff" : "#444",
+    padding: "20px",
+    borderRadius: "5px",
+    boxShadow:
+      theme === "light"
+        ? "0 0 10px rgba(0, 0, 0, 0.1)"
+        : "0 0 10px rgba(255, 255, 255, 0.1)",
+    marginBottom: "10px",
   };
 
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          infinite: true,
-          dots: true,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+  const starStyles = {
+    display: "inline-block",
+    color: "#ffd700",
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span key={i} style={starStyles}>
+          {i <= rating ? "★" : "☆"}
+        </span>
+      );
+    }
+    return stars;
   };
 
   return (
@@ -109,28 +102,15 @@ const ItemDetails = () => {
         <p>Price: ${item.price}</p>
         <p>Description: {item.description}</p>
       </div>
-      <div style={sliderStyles}>
-        <h2>You will also like</h2>
-        <Slider {...sliderSettings}>
-          {randomservices.map((service) => (
-            <div key={service._id} style={sliderItemStyles}>
-              <Link
-                to={`/item/${service._id}`}
-                state={{ item: service }}
-                style={linkStyles}
-              >
-                {service.image && (
-                  <img
-                    src={`${config.baseURL}${service.image}`}
-                    alt={service.title}
-                    style={imageStyles}
-                  />
-                )}
-                <h3>{service.title}</h3>
-                </Link>
-            </div>
-          ))}
-        </Slider>
+      <div style={reviewListStyles}>
+        <h2>Reviews</h2>
+        {reviews.map((review) => (
+          <div key={review._id} style={reviewItemStyles}>
+            <h3>{review.user.username}</h3>
+            <div>{renderStars(review.rating)}</div>
+            <p>{review.comment}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -140,7 +120,6 @@ ItemDetails.propTypes = {
   item: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
-    author: PropTypes.string,
     price: PropTypes.number,
     createdAt: PropTypes.string,
     updatedAt: PropTypes.string,

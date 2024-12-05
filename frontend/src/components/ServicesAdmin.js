@@ -1,23 +1,30 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
 import config from "../config";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 
-const ServicesAdmin = () => {
+const ServicesAdmin = forwardRef((props, ref) => {
   const { user } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const [services, setServices] = useState([]);
   const [serviceTypes, setServiceTypes] = useState([]);
   const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [image, setImage] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editServiceId, setEditServiceId] = useState(null);
+  const [error, setError] = useState("");
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -43,8 +50,16 @@ const ServicesAdmin = () => {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    fetchServiceTypes,
+  }));
+
   const addService = async (e) => {
     e.preventDefault();
+    if (!title || !description || !price || !serviceType) {
+      setError("Please fill in all required fields.");
+      return;
+    }
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -67,7 +82,9 @@ const ServicesAdmin = () => {
       setPrice("");
       setServiceType("");
       setImage(null);
+      setError("");
     } catch (error) {
+      setError("Failed to add service. Please try again.");
       console.error(error);
     }
   };
@@ -79,6 +96,7 @@ const ServicesAdmin = () => {
       });
       fetchServices();
     } catch (error) {
+      setError("Failed to delete service. Please try again.");
       console.error(error);
     }
   };
@@ -96,6 +114,10 @@ const ServicesAdmin = () => {
 
   const editService = async (e) => {
     e.preventDefault();
+    if (!title || !description || !price || !serviceType) {
+      setError("Please fill in all required fields.");
+      return;
+    }
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -120,7 +142,9 @@ const ServicesAdmin = () => {
       setPrice("");
       setServiceType("");
       setImage(null);
+      setError("");
     } catch (error) {
+      setError("Failed to update service. Please try again.");
       console.error(error);
     }
   };
@@ -133,7 +157,7 @@ const ServicesAdmin = () => {
 
   const containerStyles = {
     padding: "20px",
-    backgroundColor: theme === "light" ? "#fafafa" : "#444",
+    backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
     color: theme === "light" ? "#000" : "#fff",
     minHeight: "100vh",
   };
@@ -144,11 +168,11 @@ const ServicesAdmin = () => {
     gap: "10px",
     padding: "20px",
     backgroundColor: theme === "light" ? "#fff" : "#444",
-    borderRadius: "5px",
+    borderRadius: "10px",
     boxShadow:
       theme === "light"
-        ? "0 0 10px rgba(0, 0, 0, 0.1)"
-        : "0 0 10px rgba(255, 255, 255, 0.1)",
+        ? "0 0 15px rgba(0, 0, 0, 0.1)"
+        : "0 0 15px rgba(255, 255, 255, 0.1)",
     maxWidth: "600px",
     margin: "0 auto 20px",
   };
@@ -167,9 +191,14 @@ const ServicesAdmin = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
     marginLeft: "10px",
+  };
+
+  const errorStyles = {
+    color: "red",
+    marginBottom: "10px",
   };
 
   const serviceListStyles = {
@@ -181,11 +210,11 @@ const ServicesAdmin = () => {
   const serviceCardStyles = {
     backgroundColor: theme === "light" ? "#fff" : "#444",
     padding: "20px",
-    borderRadius: "5px",
+    borderRadius: "10px",
     boxShadow:
       theme === "light"
-        ? "0 0 10px rgba(0, 0, 0, 0.1)"
-        : "0 0 10px rgba(255, 255, 255, 0.1)",
+        ? "0 0 15px rgba(0, 0, 0, 0.1)"
+        : "0 0 15px rgba(255, 255, 255, 0.1)",
   };
 
   const imageStyles = {
@@ -198,7 +227,7 @@ const ServicesAdmin = () => {
 
   const linkStyles = {
     textDecoration: "none",
-    color: theme === "light" ? "#007bff" : "#66b2ff",
+    color: theme === "light" ? "#009688" : "#66b2ff",
   };
 
   return (
@@ -210,6 +239,7 @@ const ServicesAdmin = () => {
           style={formStyles}
           ref={formRef}
         >
+          {error && <div style={errorStyles}>{error}</div>}
           <input
             type="text"
             placeholder="Title"
@@ -298,6 +328,6 @@ const ServicesAdmin = () => {
       </div>
     </div>
   );
-};
+});
 
 export default ServicesAdmin;

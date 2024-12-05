@@ -48,6 +48,7 @@ const Catalog = () => {
     display: "flex",
     gap: "10px",
     marginBottom: "20px",
+    flexWrap: "wrap",
   };
 
   const selectStyles = {
@@ -56,30 +57,32 @@ const Catalog = () => {
     border: `1px solid ${theme === "light" ? "#ccc" : "#666"}`,
     backgroundColor: theme === "light" ? "#fff" : "#555",
     color: theme === "light" ? "#000" : "#fff",
+    flex: "1 1 200px",
   };
 
   const gridStyles = {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns: "repeat(2, 1fr)",
     gap: "20px",
   };
 
   const cardStyles = {
     backgroundColor: theme === "light" ? "#fff" : "#444",
     padding: "20px",
-    borderRadius: "5px",
+    borderRadius: "10px",
     boxShadow:
       theme === "light"
-        ? "0 0 10px rgba(0, 0, 0, 0.1)"
-        : "0 0 10px rgba(255, 255, 255, 0.1)",
+        ? "0 0 15px rgba(0, 0, 0, 0.1)"
+        : "0 0 15px rgba(255, 255, 255, 0.1)",
     textAlign: "center",
+    transition: "transform 0.3s",
   };
 
   const imageStyles = {
     width: "100%",
     height: "200px",
     objectFit: "cover",
-    borderRadius: "5px",
+    borderRadius: "10px",
     marginBottom: "10px",
   };
 
@@ -88,9 +91,14 @@ const Catalog = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
     textDecoration: "none",
+    transition: "background-color 0.3s",
+  };
+
+  const cardHoverStyles = {
+    transform: "scale(1.05)",
   };
 
   return (
@@ -136,7 +144,14 @@ const Catalog = () => {
       </div>
       <div style={gridStyles}>
         {items.map((item) => (
-          <div key={item._id} style={cardStyles}>
+          <div
+            key={item._id}
+            style={cardStyles}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = cardHoverStyles.transform)
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
             {item.image && (
               <img
                 src={`${config.baseURL}${item.image}`}

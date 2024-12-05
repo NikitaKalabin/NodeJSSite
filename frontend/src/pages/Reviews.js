@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
+import Select from "react-select";
 import api from "../utils/api";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
@@ -9,9 +10,11 @@ const Reviews = () => {
   const { user } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const [reviews, setReviews] = useState([]);
-  const [services, setservices] = useState([]);
-  const [selectedserviceForReview, setSelectedserviceForReview] = useState("");
-  const [selectedserviceForFilter, setSelectedserviceForFilter] = useState("");
+  const [services, setServices] = useState([]);
+  const [selectedServiceForReview, setSelectedServiceForReview] =
+    useState(null);
+  const [selectedServiceForFilter, setSelectedServiceForFilter] =
+    useState(null);
   const [rating, setRating] = useState(1);
   const [comment, setComment] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -23,10 +26,10 @@ const Reviews = () => {
     fetchReviews();
   }, []);
 
-  const fetchReviews = async (selectedservice = "") => {
+  const fetchReviews = async (selectedService = "") => {
     try {
       const response = await api.get("/api/reviews", {
-        params: { service: selectedservice },
+        params: { service: selectedService },
       });
       setReviews(response.data);
     } catch (error) {
@@ -37,7 +40,7 @@ const Reviews = () => {
   const fetchServices = async () => {
     try {
       const response = await api.get("/api/services");
-      setservices(response.data);
+      setServices(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -46,12 +49,16 @@ const Reviews = () => {
   const addReview = async (e) => {
     e.preventDefault();
     try {
-      const newReview = { service: selectedserviceForReview, rating, comment };
+      const newReview = {
+        service: selectedServiceForReview.value,
+        rating,
+        comment,
+      };
       await api.post("/api/reviews", newReview, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
       fetchReviews();
-      setSelectedserviceForReview("");
+      setSelectedServiceForReview(null);
       setRating(1);
       setComment("");
     } catch (error) {
@@ -64,7 +71,9 @@ const Reviews = () => {
       await api.delete(`/api/reviews/${id}`, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
-      fetchReviews(selectedserviceForFilter);
+      fetchReviews(
+        selectedServiceForFilter ? selectedServiceForFilter.value : ""
+      );
     } catch (error) {
       console.error(error);
     }
@@ -73,7 +82,10 @@ const Reviews = () => {
   const startEditReview = (review) => {
     setEditMode(true);
     setEditReviewId(review._id);
-    setSelectedserviceForReview(review.service._id);
+    setSelectedServiceForReview({
+      value: review.service._id,
+      label: review.service.title,
+    });
     setRating(review.rating);
     setComment(review.comment);
     formRef.current.scrollIntoView({ behavior: "smooth" });
@@ -86,10 +98,12 @@ const Reviews = () => {
       await api.put(`/api/reviews/${editReviewId}`, updatedReview, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       });
-      fetchReviews(selectedserviceForFilter);
+      fetchReviews(
+        selectedServiceForFilter ? selectedServiceForFilter.value : ""
+      );
       setEditMode(false);
       setEditReviewId(null);
-      setSelectedserviceForReview("");
+      setSelectedServiceForReview(null);
       setRating(1);
       setComment("");
     } catch (error) {
@@ -114,14 +128,30 @@ const Reviews = () => {
   };
 
   const selectStyles = {
-    padding: "10px",
-    borderRadius: "5px",
-    border: `1px solid ${theme === "light" ? "#ccc" : "#666"}`,
-    backgroundColor: theme === "light" ? "#fff" : "#555",
-    color: theme === "light" ? "#000" : "#fff",
+    control: (base) => ({
+      ...base,
+      backgroundColor: theme === "light" ? "#fff" : "#555",
+      borderColor: theme === "light" ? "#ccc" : "#666",
+      color: theme === "light" ? "#000" : "#fff",
+      marginTop: "30px",
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: theme === "light" ? "#fff" : "#555",
+      color: theme === "light" ? "#000" : "#fff",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: theme === "light" ? "#000" : "#fff",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: theme === "light" ? "#000" : "#fff",
+    }),
   };
 
   const reviewListStyles = {
+    marginTop: "20px",
     display: "flex",
     flexDirection: "column",
     gap: "20px",
@@ -145,16 +175,26 @@ const Reviews = () => {
     marginRight: "20px",
   };
 
-  const progressBarStyles = (rating) => ({
-    width: `${rating * 20}%`,
-    height: "10px",
-    backgroundColor: rating >= 4 ? "green" : rating >= 2 ? "orange" : "red",
-    borderRadius: "5px",
-  });
+  const starStyles = {
+    display: "inline-block",
+    color: "#ffd700",
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span key={i} style={starStyles}>
+          {i <= rating ? "★" : "☆"}
+        </span>
+      );
+    }
+    return stars;
+  };
 
   const linkStyles = {
     textDecoration: "none",
-    color: theme === "light" ? "#007bff" : "#66b2ff",
+    color: theme === "light" ? "#009688" : "#66b2ff",
   };
 
   const buttonStyles = {
@@ -162,10 +202,15 @@ const Reviews = () => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
     marginRight: "10px",
   };
+
+  const serviceOptions = services.map((service) => ({
+    value: service._id,
+    label: service.title,
+  }));
 
   return (
     <div style={containerStyles}>
@@ -176,20 +221,15 @@ const Reviews = () => {
           style={formStyles}
           ref={formRef}
         >
-          <select
-            value={selectedserviceForReview}
-            onChange={(e) => setSelectedserviceForReview(e.target.value)}
-            required
-            disabled={editMode}
-            style={selectStyles}
-          >
-            <option value="">Select service</option>
-            {services.map((service) => (
-              <option key={service._id} value={service._id}>
-                {service.title}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={selectedServiceForReview}
+            onChange={setSelectedServiceForReview}
+            options={serviceOptions}
+            isDisabled={editMode}
+            placeholder="Select service"
+            styles={selectStyles}
+            isSearchable
+          />
           <input
             type="number"
             min="1"
@@ -197,13 +237,25 @@ const Reviews = () => {
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             required
-            style={selectStyles}
+            style={{
+              padding: "10px",
+              borderRadius: "5px",
+              border: `1px solid ${theme === "light" ? "#ccc" : "#666"}`,
+              backgroundColor: theme === "light" ? "#fff" : "#555",
+              color: theme === "light" ? "#000" : "#fff",
+            }}
           />
           <textarea
             placeholder="Comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            style={selectStyles}
+            style={{
+              padding: "10px",
+              borderRadius: "5px",
+              border: `1px solid ${theme === "light" ? "#ccc" : "#666"}`,
+              backgroundColor: theme === "light" ? "#fff" : "#555",
+              color: theme === "light" ? "#000" : "#fff",
+            }}
           />
           <button type="submit" style={buttonStyles}>
             {editMode ? "Update Review" : "Add Review"}
@@ -215,21 +267,17 @@ const Reviews = () => {
           )}
         </form>
       )}
-      <select
-        value={selectedserviceForFilter}
-        onChange={(e) => {
-          setSelectedserviceForFilter(e.target.value);
-          fetchReviews(e.target.value);
+      <Select
+        value={selectedServiceForFilter}
+        onChange={(option) => {
+          setSelectedServiceForFilter(option);
+          fetchReviews(option ? option.value : "");
         }}
-        style={selectStyles}
-      >
-        <option value="">All services</option>
-        {services.map((service) => (
-          <option key={service._id} value={service._id}>
-            {service.title}
-          </option>
-        ))}
-      </select>
+        options={serviceOptions}
+        placeholder="All services"
+        styles={selectStyles}
+        isSearchable
+      />
       <div style={reviewListStyles}>
         {reviews.map((review) => (
           <div key={review._id} style={reviewCardStyles}>
@@ -249,8 +297,7 @@ const Reviews = () => {
                 >
                   <h3>{review.service.title}</h3>
                 </Link>
-                <div style={progressBarStyles(review.rating)}></div>
-                <p>Rating: {review.rating}</p>
+                <div>{renderStars(review.rating)}</div>
                 <p>{review.comment}</p>
                 <p>By: {review.user.username}</p>
                 {user && (user.isAdmin || user._id === review.user._id) && (
