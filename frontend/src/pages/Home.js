@@ -49,7 +49,7 @@ const Home = () => {
         <p>Time Zone: {timeZone}</p>
       </div>
       <div style={apiDataStyles}>
-        <ApiData />
+      {user && <ApiData />}
       </div>
     </div>
   );

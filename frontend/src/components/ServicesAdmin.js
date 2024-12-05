@@ -47,7 +47,6 @@ const ServicesAdmin = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("author", author);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("serviceType", serviceType);
@@ -64,7 +63,6 @@ const ServicesAdmin = () => {
       });
       fetchServices();
       setTitle("");
-      setAuthor("");
       setDescription("");
       setPrice("");
       setServiceType("");
@@ -89,7 +87,6 @@ const ServicesAdmin = () => {
     setEditMode(true);
     setEditServiceId(service._id);
     setTitle(service.title);
-    setAuthor(service.author);
     setDescription(service.description);
     setPrice(service.price);
     setServiceType(service.serviceType);
@@ -101,7 +98,6 @@ const ServicesAdmin = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("author", author);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("serviceType", serviceType);
@@ -120,7 +116,6 @@ const ServicesAdmin = () => {
       setEditMode(false);
       setEditServiceId(null);
       setTitle("");
-      setAuthor("");
       setDescription("");
       setPrice("");
       setServiceType("");
@@ -174,6 +169,7 @@ const ServicesAdmin = () => {
     cursor: "pointer",
     backgroundColor: theme === "light" ? "#007bff" : "#0056b3",
     color: "#fff",
+    marginLeft: "10px",
   };
 
   const serviceListStyles = {
@@ -219,13 +215,6 @@ const ServicesAdmin = () => {
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={inputStyles}
-          />
-          <input
-            type="text"
-            placeholder="Author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
             style={inputStyles}
           />
           <input

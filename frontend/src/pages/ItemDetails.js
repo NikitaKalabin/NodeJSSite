@@ -105,10 +105,9 @@ const ItemDetails = () => {
             style={imageStyles}
           />
         )}
-        <h1>{item.title}</h1>
-        <p>${item.price}</p>
-        <p>Author: {item.author}</p>
-        <p>{item.description}</p>
+        <h1>Name of service: {item.title}</h1>
+        <p>Price: ${item.price}</p>
+        <p>Description: {item.description}</p>
       </div>
       <div style={sliderStyles}>
         <h2>You will also like</h2>
@@ -128,7 +127,7 @@ const ItemDetails = () => {
                   />
                 )}
                 <h3>{service.title}</h3>
-              </Link>
+                </Link>
             </div>
           ))}
         </Slider>
@@ -151,9 +150,8 @@ ItemDetails.propTypes = {
 
 ItemDetails.defaultProps = {
   item: {
-    title: "Unknown Title",
+    title: "Unknown Name",
     description: "No description available",
-    author: "Unknown Author",
     price: 0,
     createdAt: moment().format("YYYY-MM-DD HH:mm:ss"),
     updatedAt: moment().format("YYYY-MM-DD HH:mm:ss"),

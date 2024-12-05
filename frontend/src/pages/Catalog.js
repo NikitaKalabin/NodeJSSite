@@ -99,7 +99,7 @@ const Catalog = () => {
       <div style={filterStyles}>
         <input
           type="text"
-          placeholder="Search by title or author"
+          placeholder="Search by name or type"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={selectStyles}
@@ -110,7 +110,7 @@ const Catalog = () => {
           style={selectStyles}
         >
           <option value="">Sort By</option>
-          <option value="title">Title</option>
+          <option value="title">Name</option>
           <option value="price">Price</option>
         </select>
         <select
