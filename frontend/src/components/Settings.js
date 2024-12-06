@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 import api from "../utils/api";
 
-const Settings = () => {
+function Settings() {
   const { user, setUser } = useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const [username, setUsername] = useState("");
@@ -124,6 +124,6 @@ const Settings = () => {
       </form>
     </div>
   );
-};
+}
 
 export default Settings;

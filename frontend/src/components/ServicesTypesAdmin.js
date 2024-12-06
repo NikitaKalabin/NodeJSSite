@@ -123,8 +123,9 @@ const ServiceTypesAdmin = ({ onServiceTypeAdded }) => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#009688" : "#0056b3",
+    backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
+    marginLeft: "10px",
   };
 
   const listStyles = {

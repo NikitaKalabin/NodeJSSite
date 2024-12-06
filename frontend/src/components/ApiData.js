@@ -3,6 +3,7 @@ import axios from "axios";
 import { ThemeContext } from "../context/ThemeContext";
 
 const ApiData = () => {
+  // определяем состояния для цен криптовалют и изображений кота
   const { theme } = useContext(ThemeContext);
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [ethereumPrice, setEthereumPrice] = useState(null);
@@ -10,7 +11,7 @@ const ApiData = () => {
   const [catImage, setCatImage] = useState(null);
 
   useEffect(() => {
-    // Fetch Bitcoin price
+    // Bitcoin 
     const fetchBitcoinPrice = async () => {
       try {
         const response = await axios.get(
@@ -28,7 +29,7 @@ const ApiData = () => {
       }
     };
 
-    // Fetch Ethereum price
+    // Ethereum 
     const fetchEthereumPrice = async () => {
       try {
         const response = await axios.get(
@@ -46,7 +47,7 @@ const ApiData = () => {
       }
     };
 
-    // Fetch Litecoin price
+    // Litecoin 
     const fetchLitecoinPrice = async () => {
       try {
         const response = await axios.get(
@@ -64,7 +65,7 @@ const ApiData = () => {
       }
     };
 
-    // Fetch cat image
+    // cat image
     const fetchCatImage = async () => {
       try {
         const response = await axios.get(
