@@ -194,17 +194,16 @@ const Reviews = () => {
 
   const linkStyles = {
     textDecoration: "none",
-    color: theme === "light" ? "#009688" : "#66b2ff",
+    color: theme === "light" ? "#009688" : "#008073",
   };
 
   const buttonStyles = {
-    padding: "5px 10px",
+    padding: "10px 10px",
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
     backgroundColor: theme === "light" ? "#009688" : "#008073",
     color: "#fff",
-    marginRight: "10px",
   };
 
   const serviceOptions = services.map((service) => ({

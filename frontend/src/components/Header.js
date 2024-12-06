@@ -27,7 +27,7 @@ const Header = () => {
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
-    padding: "10px 20px",
+    padding: "20px 20px",
     backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
     color: theme === "light" ? "#000" : "#fff",
     position: "fixed",

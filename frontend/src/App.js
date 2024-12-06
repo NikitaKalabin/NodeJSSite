@@ -14,7 +14,6 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
 
-/* Декларативная функция */
 function App() {
   const appStyles = {
     display: "flex",

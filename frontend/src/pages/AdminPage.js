@@ -9,7 +9,7 @@ const AdminPage = () => {
 
   const containerStyles = {
     padding: "20px",
-    backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
+    backgroundColor: theme === "light" ? "#fafafa" : "#444",
     color: theme === "light" ? "#000" : "#fff",
     minHeight: "100vh",
     display: "flex",
@@ -23,10 +23,16 @@ const AdminPage = () => {
     fontSize: "2rem",
   };
 
-  const sectionStyles = {
+  const sectionsContainerStyles = {
+    display: "flex",
+    justifyContent: "space-between",
     width: "100%",
     maxWidth: "1200px",
-    marginBottom: "40px",
+    gap: "20px",
+  };
+
+  const sectionStyles = {
+    flex: "1",
     padding: "20px",
     backgroundColor: theme === "light" ? "#fff" : "#444",
     borderRadius: "10px",
@@ -52,13 +58,15 @@ const AdminPage = () => {
   return (
     <div style={containerStyles}>
       <h1 style={headerStyles}>Admin Page</h1>
-      <div style={sectionStyles}>
-        <h2 style={sectionHeaderStyles}>Manage Services</h2>
-        <ServicesAdmin ref={servicesAdminRef} />
-      </div>
-      <div style={sectionStyles}>
-        <h2 style={sectionHeaderStyles}>Manage Service Types</h2>
-        <ServiceTypesAdmin onServiceTypeAdded={handleServiceTypeAdded} />
+      <div style={sectionsContainerStyles}>
+        <div style={sectionStyles}>
+          <h2 style={sectionHeaderStyles}>Manage Services</h2>
+          <ServicesAdmin ref={servicesAdminRef} />
+        </div>
+        <div style={sectionStyles}>
+          <h2 style={sectionHeaderStyles}>Manage Service Types</h2>
+          <ServiceTypesAdmin onServiceTypeAdded={handleServiceTypeAdded} />
+        </div>
       </div>
     </div>
   );

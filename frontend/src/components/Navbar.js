@@ -12,7 +12,7 @@ class Navbar extends Component {
       ul: {
         listStyle: "none",
         display: "flex",
-        gap: "10px",
+        gap: "40px",
       },
       li: {
         display: "inline",

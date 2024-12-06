@@ -9,13 +9,18 @@ class Footer extends Component {
     super(props);
     this.state = {
       footerText: props.text,
+      originalText: props.text,
+      isOriginal: true,
     };
   }
 
   handleChangeText = () => {
-    this.setState({
-      footerText: "Visit my GitHub: https://github.com/bober20",
-    });
+    this.setState((prevState) => ({
+      footerText: prevState.isOriginal
+        ? "Visit my GitHub: https://github.com/bober20"
+        : prevState.originalText,
+      isOriginal: !prevState.isOriginal,
+    }));
   };
 
   render() {

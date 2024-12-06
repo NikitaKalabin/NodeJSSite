@@ -92,9 +92,6 @@ const ServiceTypesAdmin = ({ onServiceTypeAdded }) => {
     backgroundColor: theme === "light" ? "#f0f0f0" : "#333",
     color: theme === "light" ? "#000" : "#fff",
     minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
   };
 
   const formStyles = {
@@ -109,8 +106,7 @@ const ServiceTypesAdmin = ({ onServiceTypeAdded }) => {
         ? "0 0 15px rgba(0, 0, 0, 0.1)"
         : "0 0 15px rgba(255, 255, 255, 0.1)",
     maxWidth: "600px",
-    width: "100%",
-    marginBottom: "20px",
+    margin: "0 auto 20px",
   };
 
   const inputStyles = {
@@ -127,7 +123,7 @@ const ServiceTypesAdmin = ({ onServiceTypeAdded }) => {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: theme === "light" ? "#009688" : "#008073",
+    backgroundColor: theme === "light" ? "#009688" : "#0056b3",
     color: "#fff",
   };
 
